@@ -69,14 +69,14 @@ function vulSpeelveld(size){
 			let text = document.createTextNode(getNextLetter());
 
             cards.appendChild(text);
-            cards.className = 'letterParagraph'
+            cards.className = 'letter'
             td.appendChild(cards);
 
             cards = document.createElement("cards");
             text = document.createTextNode(karakter);
 
             cards.appendChild(text);
-			cards.className = 'karakterParagraph';
+			cards.className = 'karakter';
 
             td.appendChild(cards);	
 			tr.appendChild(td)
