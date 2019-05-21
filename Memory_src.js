@@ -1,31 +1,37 @@
 /**
  * 
  */
+
 var startTijd, totaalTijd = 0, aantalTijden = 0;
-// StartTijd is de tijd dat het huidige spel begonnen is. 
-// Totaaltijd is de som van de tijd van alle gespeelde spelletjes, aantaltijden is het aantal spelletjes 
+// StartTijd is de tijd dat het huidige spel begonnen is
+// Totaaltijd is de som van de tijd van alle gespeelde spelletjes
+// Aantaltijden is het aantal spelletjes 
+
 var firstCard, secondCard;
-// De eerste en tweede kaart die zijn omgedraaid.
+// De eerste en tweede kaart die zijn omgedraaid
+
 var karakter;
 // Het teken dat op de achterkant van de kaart getoond wordt
-var intervalID,tijdID;
+
+var intervalID, tijdID;
 // De ID's voor de timeouts voor het terugdraaien van de kaarten en het bijwerken van de tijdweergave
 
 var numberOfCards;
 // Aantal kaarten op het bord
+
 var numberOfCardsLeft;
 // Aantal kaarten dat nog op het bord ligt
+
 var topScores = [
-                 {name:"Barack Obama", time:200},
-                 {name:"Bernie Sanders", time:300},
-                 {name:"Hillary Clinton", time:400},
-                 {name:"Jeb Bush", time:500},
-                 {name:"Donald Trump", time:600}
-                 ]
+    { name: "Barack Obama", time: 200 },
+    { name: "Bernie Sanders", time: 300 },
+    { name: "Hillary Clinton", time: 400 },
+    { name: "Jeb Bush", time: 500 },
+    { name: "Donald Trump", time: 600 }
+]
 
-
-function initGame(size) { 
-	initVars(size);
+function initGame(size) {
+    initVars(size);
 	vulSpeelveld(size);
 	showScores();
 }
@@ -36,26 +42,28 @@ function initVars(size){
 	showScores();
 	getSeconds();
 }
+
 function vulSpeelveld(size){
-	// Bouw de size x size table speelveld op. Elk <td> element van de tabel
-	// moet een karakter toegewezen worden. Hiervoor kan de nextletter functie
-	// gebruikt worden. Ook moet de eventlistener cardClicked aan de cell gekoppeld worden
-	// en de opmaak juist gezet worden.
-	var getletter = new nextLetter(size);
-	var speeldveld = documennt.getElementsByID("speelveld");
-	$(speeldveld).empty();
+    // Bouw de size x size table speelveld op
+    // Elk < td > element van de tabel moet een karakter toegewezen worden
+    // Hiervoor kan de nextletter functie gebruikt worden
+    // Ook moet de eventlistener cardClicked aan de cell gekoppeld worden en de opmaak juist gezet worden
+	var getNextLetter = new nextLetter(size);
+
+    var speelveld = document.getElementsByID("speelveld");
+	$(speelveld).empty();
 	speelveldbody = document.createElement("speelveldbody");
-	for(var rows = 0; rows <size;rows++){
+
+    for (var rows = 0; rows < size; rows++) {
 		var tr = document.createElement("tr");
-		for(var coloms = 0; coloms<size;coloms++ ){
+
+        for (var columns = 0; columns < size; columns++) {
 			var td = document.createElement("td");
-				td. className = "inactive";
-				td.addEventListener('click',
-					function(){cardClicked(this);},
-					false
-				);
-				let cards = document.createElement('cards');
-				let text = document.createTextNode(getletter());
+			td.className = "inactive";
+			td.addEventListener('click',function(){cardClicked(this);},false);
+
+            let cards = document.createElement('cards');
+			let text = document.createTextNode(getNextLetter());
 				cards.appendChild(text);
 				cards.className  = 'letterParagragh'
 				td.appendChild(cards);
@@ -225,25 +233,26 @@ function toggleCard(element) {
 	};
 	}
 
-function checkKaarten(){
-	// Kijk of de beide kaarten gelijk zijn. Als dit zo is moet het aantal gevonden paren 
-	// opgehord worden, het aantal resterende kaarten kleiner worden en ervoor  
-	// gezorgd worden dat er niet meer op de kaarten geklikt kan worden. De kaarten
-	// zijn nu found.
-	// Als de kaarten niet gelijk zijn moet de timer gaan lopen van de toontijd, en 
-	// de timeleft geanimeerd worden zodat deze laat zien hoeveel tijd er nog is.
-	let firstCardLetter = firstCard.childNodes[0].innerText;
-	let secondCardLetter = secondCard.childNodes[0].innerText;
-	if (firstCardLetter == secondCardLetter) {
-		firstCard.className = "found";
-		secondCard.className = "found";
-		firstCard = '';
-		secondCard = '';
-		numberOfCardsLeft -= 2;
-	} else {
-		setTimeout(deactivateCards, intervalID);
-		$("#timeLeft").animate({width: "0px"}, intervalID);
-	
+function checkKaarten() {
+    // Kijk of de beide kaarten gelijk zijn. Als dit zo is moet het aantal gevonden paren 
+    // opgehord worden, het aantal resterende kaarten kleiner worden en ervoor  
+    // gezorgd worden dat er niet meer op de kaarten geklikt kan worden. De kaarten
+    // zijn nu found.
+    // Als de kaarten niet gelijk zijn moet de timer gaan lopen van de toontijd, en 
+    // de timeleft geanimeerd worden zodat deze laat zien hoeveel tijd er nog is.
+    let firstCardLetter = firstCard.childNodes[0].innerText;
+    let secondCardLetter = secondCard.childNodes[0].innerText;
+    if (firstCardLetter == secondCardLetter) {
+        firstCard.className = "found";
+        secondCard.className = "found";
+        firstCard = '';
+        secondCard = '';
+        numberOfCardsLeft -= 2;
+    } else {
+        setTimeout(deactivateCards, intervalID);
+        $("#timeLeft").animate({ width: "0px" }, intervalID);
+
+    }
 }
 
 // De functie tijdBijhouden moet elke halve seconde uitgevoerd worden om te controleren of 
@@ -296,5 +305,3 @@ $(document).ready(function(){
         initGame($("#size").val());
     });
 });
-
-
