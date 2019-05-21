@@ -43,16 +43,48 @@ function vulSpeelveld(size){
 	// en de opmaak juist gezet worden.
 	var getletter = new nextLetter(size);
 	var speeldveld = documennt.getElementsByID("speelveld");
+	$(speeldveld).empty();
+	speelveldbody = document.createElement("speelveldbody");
 	for(var rows = 0; rows <size;rows++){
 		var tr = document.createElement("tr");
 		for(var coloms = 0; coloms<size;coloms++ ){
-			addcard.appendChild(node); 
+			var td = document.createElement("td");
+				td. className = "inactive";
+				td.addEventListener('click',
+					function(){cardClicked(this);},
+					false
+				);
+				let cards = document.createElement('cards');
+				let text = document.createTextNode(getletter());
+				cards.appendChild(text);
+				cards.className  = 'letterParagragh'
+				td.appendChild(cards);
+				cards = document.createElement("cards");
+				 text = document.createTextNode(karakter);
+				 cards.appendChild(text);
+				 cards.className = 'karakterParagragh';
+				 td.appendChild(cards);	
+				 tr.appendChild(td)
 		}
+			speelveldbody.appendChild(tr);
 	}
+	speelveld.appendChild(speelveldbody);
 }
-function addcard(){
-	 let cards = [];
-}
+/*function addcard(){
+ 
+	
+	let cards = document.createElement('p');
+	 let text = document.createTextNode(getletter());
+	 cards.appendChild(text);
+	 cards.className  = 'letterParagragh'
+	 tr2.appendChild(cards);
+	 cards = document.createElement("p");
+		text = document.createTextNode(karakter);
+		cards.appendChild(text);
+		cards.className = 'karakterParagragh';
+		tr2.appendChild(cards);	
+
+}*/
 function clearGrid(){
 	$(".grid").remove();
 }
@@ -64,18 +96,47 @@ function refreshGrid(){
 
 function showScores(){
 	// Vul het topscore lijstje op het scherm.
-	console.log(topScores);
+	let topScoresList = document.getElementById("topscore");
+	$(topScoresList).empty();
+	topScores.sort((a,b) => a.time - b.time)
+	for (let i =0;i<5;i++){
+			let score = topScoresList[i];
+			let item = document.createElement("li");
+		let waarde = document.createTextNode(score.name+":"+ score.time);
+			item.appendChild(waarde);
+			topScoresList.appendChild(item);	
+	}
+	
 }
 
 function setTijden(){
 	// bereken de verlopen tijd, de gemiddlede tijd en het verschil tussen 
 	// de huidige speeltijd en de gemiddelde tijd en vul de elementen in de HTML.
 	// Vul ook het aantal gevonden kaarten
+	let verlopenTijd = (typeof startTijd === "undefined") ? 0 : getSeconds() - startTijd;
+	let verlopenTijdSpan = document.getElementById("tijd");
+	verlopenTijdSpan.innerHTML = verlopenTijd;
+
+	let gevondenParen = (numberOfCards - numberOfCardsLeft) / 2;
+	let gevondenParenSpan = document.getElementById("gevonden");
+	gevondenParenSpan.innerHTML = gevondenParen;
+
+	let gemiddeldeTijd = (aantalTijden === 0) ? 0 : Math.round(totaalTijd / aantalTijden);
+	let verschilGemiddeldeTijd = (typeof startTijd === "undefined") ? 0 : (getSeconds() - startTijd) - gemiddeldeTijd;
+	let gemiddeldSpan = document.getElementById("gemiddeld");
+	let sign = (verschilGemiddeldeTijd >= 0) ? "+" : "";
+	gemiddeldSpan.innerHTML = gemiddeldeTijd + "s (" + sign + verschilGemiddeldeTijd + "s)";
 }
+
 
 function getSeconds(){
 	// Een functie om de Systeemtijd in seconden in plaats van miliseconden 
 	// op te halen. Altijd handig.
+	let datum = new Date();
+	let millisecond = datum.getTime();
+	 
+	var afrond = Math.round(millisecond/1000);
+	return afrond;
 }
 
 var nextLetter = function(size){
@@ -108,32 +169,61 @@ window.onload = startGame();
 function checkStarttijd(){
 	// Controleer of de startijd van het spel gezet is, i.e. het spel al gestart was.
 	// Als dat niet zo is doe dat nu, en start de timeOut voor het bijhouden van de tijd.
-
+	if (typeof startTijd === 'undefined') {
+		startTijd = getSeconds();
+		tijdBijhouden();
+	}
 }
 
 function checkDerdeKaart(){
 	// Controleer of het de derde kaart is die wordt aangeklikt.
 	// Als dit zo is kunnen de geopende kaarten gedeactiveerd (gesloten) worden.
+	if (firstCard != '' && secondCard != '') {
+		deactivateCards();
+	}
 }
 
 function turnCard(card){
 	// Draai de kaart om. Dit kan alleen als de kaart nog niet geopend of gevonden is.
 	// Geef ook aan hoeveel kaarten er nu zijn omgedraaid en return dit zodat in de 
 	// cardClicked functie de checkKaarten functie kan worden aangeroepen als dat nodig is.
+	if (firstCard == card) {
+		return 1;
+	} else if (firstCard == '' ) {
+		firstCard = card;
+		toggleCard(card);
+		return 1;
+	} else if (secondCard == '') {
+		secondCard = card;
+		toggleCard(card);
+		return 2;
+	}
 
+	return 0;
 }
 
 function deactivateCards() { 
 	// Functie om de twee omgedraaide kaarten weer terug te draaien
+	firstCard.className = "inactive"
+	firstCard = '';
+	secondCard.className = "inactive";
+	secondCard = '';
+	$("#timeLeft").animate({width: "185px"}, 0);
 }
 
 function toggleCard(element) {
 	// Draai de kaart om, als de letter getoond wordt, toon dan de achterkant en 
 	// vice versa. switch dus van active naar inactive of omgekeerd.
-	this.classList.toggle("open");
+	/*this.classList.toggle("open");
    this.classList.toggle("show");
    this.classList.toggle("disabled");
-}
+	*/
+	if (element.className == "active") {
+		element.className = "inactive"
+	} else if (element.className == "inactive") { 
+		element.className = "active"
+	};
+	}
 
 function checkKaarten(){
 	// Kijk of de beide kaarten gelijk zijn. Als dit zo is moet het aantal gevonden paren 
@@ -142,17 +232,18 @@ function checkKaarten(){
 	// zijn nu found.
 	// Als de kaarten niet gelijk zijn moet de timer gaan lopen van de toontijd, en 
 	// de timeleft geanimeerd worden zodat deze laat zien hoeveel tijd er nog is.
-	var openedCard = [];
-	oepedCard.push(this);
-	var len = openedCard.length;
-	if(len ==2){
-		moveCounter();
-		if(openedCard[0].type === openedCard[1].type){
-			matched();
-		}else{
-			unmatched();
-		}
-	}
+	let firstCardLetter = firstCard.childNodes[0].innerText;
+	let secondCardLetter = secondCard.childNodes[0].innerText;
+	if (firstCardLetter == secondCardLetter) {
+		firstCard.className = "found";
+		secondCard.className = "found";
+		firstCard = '';
+		secondCard = '';
+		numberOfCardsLeft -= 2;
+	} else {
+		setTimeout(deactivateCards, intervalID);
+		$("#timeLeft").animate({width: "0px"}, intervalID);
+	
 }
 
 // De functie tijdBijhouden moet elke halve seconde uitgevoerd worden om te controleren of 
