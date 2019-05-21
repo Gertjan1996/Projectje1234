@@ -33,17 +33,38 @@ function initGame(size) {
 function initVars(size){
 	// Initialiseer alle benodigde variabelen en de velden op het scherm 
 	setTijden();
+	showScores();
+	getSeconds();
 }
-
 function vulSpeelveld(size){
 	// Bouw de size x size table speelveld op. Elk <td> element van de tabel
 	// moet een karakter toegewezen worden. Hiervoor kan de nextletter functie
 	// gebruikt worden. Ook moet de eventlistener cardClicked aan de cell gekoppeld worden
 	// en de opmaak juist gezet worden.
+	var getletter = new nextLetter(size);
+	var speeldveld = documennt.getElementsByID("speelveld");
+	for(var rows = 0; rows <size;rows++){
+		var tr = document.createElement("tr");
+		for(var coloms = 0; coloms<size;coloms++ ){
+			addcard.appendChild(node); 
+		}
+	}
 }
+function addcard(){
+	 let cards = [];
+}
+function clearGrid(){
+	$(".grid").remove();
+}
+function refreshGrid(){
+	var z = prompt("how many boxes per side?");
+	clearGrid();
+	createGrid(size);
+}	
 
 function showScores(){
 	// Vul het topscore lijstje op het scherm.
+	console.log(topScores);
 }
 
 function setTijden(){
@@ -67,18 +88,27 @@ var nextLetter = function(size){
 	}
 } 
 
-function cardClicked(card) {
+function cardClicked(card) {}
 	checkStarttijd();
 	checkDerdeKaart();
 	var draaiKaartOm = turnCard(card);
 	if (draaiKaartOm==2){
 		checkKaarten();
 	}
+const deck = document.querySelector(".deck");
+function startGame(){
+		var shuffledCards = shuffle(cards);
+		for (var i= 0; i < shuffledCards.length; i++){
+      [].forEach.call(shuffledCards, function(item){
+         deck.appendChild(item);
+      });
+		}
 }
-
+window.onload = startGame();
 function checkStarttijd(){
 	// Controleer of de startijd van het spel gezet is, i.e. het spel al gestart was.
 	// Als dat niet zo is doe dat nu, en start de timeOut voor het bijhouden van de tijd.
+
 }
 
 function checkDerdeKaart(){
@@ -90,6 +120,7 @@ function turnCard(card){
 	// Draai de kaart om. Dit kan alleen als de kaart nog niet geopend of gevonden is.
 	// Geef ook aan hoeveel kaarten er nu zijn omgedraaid en return dit zodat in de 
 	// cardClicked functie de checkKaarten functie kan worden aangeroepen als dat nodig is.
+
 }
 
 function deactivateCards() { 
@@ -99,6 +130,9 @@ function deactivateCards() {
 function toggleCard(element) {
 	// Draai de kaart om, als de letter getoond wordt, toon dan de achterkant en 
 	// vice versa. switch dus van active naar inactive of omgekeerd.
+	this.classList.toggle("open");
+   this.classList.toggle("show");
+   this.classList.toggle("disabled");
 }
 
 function checkKaarten(){
@@ -108,6 +142,17 @@ function checkKaarten(){
 	// zijn nu found.
 	// Als de kaarten niet gelijk zijn moet de timer gaan lopen van de toontijd, en 
 	// de timeleft geanimeerd worden zodat deze laat zien hoeveel tijd er nog is.
+	var openedCard = [];
+	oepedCard.push(this);
+	var len = openedCard.length;
+	if(len ==2){
+		moveCounter();
+		if(openedCard[0].type === openedCard[1].type){
+			matched();
+		}else{
+			unmatched();
+		}
+	}
 }
 
 // De functie tijdBijhouden moet elke halve seconde uitgevoerd worden om te controleren of 
